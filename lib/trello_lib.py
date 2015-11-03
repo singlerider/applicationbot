@@ -28,19 +28,18 @@ fields=name,desc&key={}&token={}".format(board_id, trello_key, trello_token)
 
 # To increment the number of jobs applied to, add the length of the result of
 # the below function plus one
-def get_cards(board_id):
+def get_cards(board_id, trello_key, trello_token):
     url = "https://api.trello.com/1/boards/{}/cards?key={}&token={}".format(board_id,
         trello_key, trello_token)
     resp = requests.get(url=url)
     data = json.loads(resp.content)
     return data
 
-def insert_card(list_id, card_name):
+def insert_card(board_id, list_id, card_name, company, trello_key, trello_token):
     url = "https://api.trello.com/1/lists/{}/cards?name={}&key={}&token={}".format(
         list_id, card_name, trello_key, trello_token)
     resp = requests.post(url=url)
     data = json.loads(resp.content)
-    return data
 
-#card_name = "{}. Hey, David. This card was inserted automatically by my bot".format((len(get_cards(con.trello_board)) + 1))
-#print insert_card(trello_applied, card_name)
+    #print insert_card(trello_applied, card_name)
+    return data
