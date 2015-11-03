@@ -92,7 +92,7 @@ def CreateMessage(sender, to, subject, message_text):
   message['to'] = to
   message['from'] = sender
   message['subject'] = subject
-  return {'raw': base64.b64encode(message.as_string())}
+  return {'raw': base64.urlsafe_b64encode(message.as_string())}
 
 
 def CreateMessageWithAttachment(sender, to, subject, message_text, file_dir,

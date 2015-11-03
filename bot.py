@@ -1,13 +1,19 @@
-#! /usr/bin/env/python
+#! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
 from config import *
 from lib.send_mail import *
 
-sender = email_address
-to = "haroboy876@gmail.com"
+def build_message_text():
+    full_message = "{}{}{}".format(intro, backend, outro)
+    return full_message
+
+sender = from_address
+to = to_address
 subject = "test"
-message_text = personal_message.encode('utf-8')
+message_text = build_message_text()
+
+print message_text
 
 Message = CreateMessage(sender, to, subject, message_text)
 testSend = SendMessage(service, 'me', Message)
