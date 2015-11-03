@@ -1,5 +1,14 @@
 # -*- coding: utf-8 -*-
 
+name = "Your Name"
+
+trello_key = ""
+trello_secret = ""
+trello_token = "" # get this by going here and replacing YOURAPIKEY:
+# https://trello.com/1/authorize?key=YOURAPIKEY&name=My+App&expiration=30days&response_type=token&scope=read,write
+trello_board = "" # Your job board!
+trello_applied = "" # The ID for your "Applied" list on your job board
+
 from_address = "yourauthenticatedemailaddress"
 to_address = raw_input("What is the email address of the company?:")
 company = raw_input("What's the name of the company?:")
