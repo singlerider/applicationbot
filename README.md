@@ -1,5 +1,4 @@
-#
-installationbot
+# installationbot
 
 Looking for work?
 
@@ -14,8 +13,33 @@ This script will help with anxiety about applying to places with "senior" in the
 job description. It makes it so easy that you won't have time for "second
 thoughts!"" Who knows? Maybe you'll get the job!
 
-##
-To-do:
+## Installation
 
-Integrate SMTP
+Follow Google's Python Quickstart at:
+https://developers.google.com/gmail/api/quickstart/python
+
+Make sure to run
+
+`pip install --upgrade google-api-python-client`
+
+in order to download the dependencies. There's a helpful wizard for setting up
+authentication at:
+https://console.developers.google.com/flows/enableapi?apiid=gmail
+
+## To Run
+
+Once you have all the boring stuff out of the way and your Google account is
+authenticated, it's time to start emailing employers!
+
+Run
+
+`cp config_example.py config.py`
+
+to create the configuration file that will be used (and omitted from git,
+should you choose to improve on the code yourself) for the project. Edit the new
+config file and format your fancy new cover letter however you'd like.
+
+## To-do
+
 Integrate Trello API
+Think of other cool stuff to implement

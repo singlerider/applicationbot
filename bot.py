@@ -10,7 +10,7 @@ def build_message_text():
 
 sender = from_address
 to = to_address
-subject = "test"
+subject = "{} at {} ({})".format(title, company, name)
 message_text = build_message_text()
 
 print message_text

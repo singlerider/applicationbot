@@ -145,4 +145,4 @@ def CreateMessageWithAttachment(sender, to, subject, message_text, file_dir,
   msg.add_header('Content-Disposition', 'attachment', filename=filename)
   message.attach(msg)
 
-  return {'raw': base64.b64encode(message.as_string())}
+  return {'raw': base64.urlsafe_b64encode(message.as_string())}
