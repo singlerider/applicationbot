@@ -11,7 +11,7 @@ Well, look no further (for now)!
 
 This script will help with anxiety about applying to places with "senior" in the
 job description. It makes it so easy that you won't have time for "second
-thoughts!"" Who knows? Maybe you'll get the job!
+thoughts!" Who knows? Maybe you'll get the job!
 
 ## Installation
 
@@ -38,6 +38,10 @@ Run
 to create the configuration file that will be used (and omitted from git,
 should you choose to improve on the code yourself) for the project. Edit the new
 config file and format your fancy new cover letter however you'd like.
+
+Finally, run
+
+`./bot.py`
 
 ## To-do
 

@@ -3,6 +3,7 @@
 
 from config import *
 from lib.send_mail import *
+from lib.trello_lib import *
 
 def build_message_text():
     full_message = "{}{}{}".format(intro, backend, outro)
@@ -13,7 +14,7 @@ to = to_address
 subject = "{} at {} ({})".format(title, company, name)
 message_text = build_message_text()
 
-print message_text
+#print message_text
 
-Message = CreateMessage(sender, to, subject, message_text)
-testSend = SendMessage(service, 'me', Message)
+#Message = CreateMessage(sender, to, subject, message_text)
+#testSend = SendMessage(service, 'me', Message)
