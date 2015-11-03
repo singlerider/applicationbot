@@ -1,6 +1,5 @@
 import requests
 import json
-from config import *
 
 # The way the API organizes card information isn't ideal for quick id-ing
 # Let's convert it to a nice dict with the list_name: list_id
@@ -43,5 +42,5 @@ def insert_card(list_id, card_name):
     data = json.loads(resp.content)
     return data
 
-card_name = "{}. Hey, David. This card was inserted automatically by my bot".format((len(get_cards(trello_board)) + 1))
-print insert_card(trello_applied, card_name)
+#card_name = "{}. Hey, David. This card was inserted automatically by my bot".format((len(get_cards(con.trello_board)) + 1))
+#print insert_card(trello_applied, card_name)

@@ -45,5 +45,4 @@ Finally, run
 
 ## To-do
 
-Integrate Trello API
 Think of other cool stuff to implement
