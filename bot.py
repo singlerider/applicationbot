@@ -16,9 +16,11 @@ def build_message_text(data):
         resume)
     return full_message
 
+
 def save_cover_letter(company, message_text):
     with open('cover_letters/{}_cover_letter.txt'.format(company.replace(" ", "_").lower()), 'w') as f:
         f.write(message_text)
+
 
 def update_trello(data, company):
     board_id = data["trello_board"]
@@ -27,8 +29,8 @@ def update_trello(data, company):
     trello_token = data["trello_token"]
     card_name = "{}. {}".format((len(get_cards(board_id, trello_key,
         trello_token)) + 1), company)
-    return insert_card(board_id, list_id, card_name, company, trello_key,
-        trello_token)
+    insert_card(board_id, list_id, card_name, company, trello_key, trello_token)
+    print "Trello Updated"
 
 
 def send_email(data, to_address, company, title, description, personal_message, message_text):
@@ -43,7 +45,6 @@ def send_email(data, to_address, company, title, description, personal_message, 
     # uncomment line below to send email WITHOUT an attachment
     #message = CreateMessage(sender, to, subject, message_text)
     send = SendMessage(service, 'me', message)
-    print message_text
 
 
 def main(intialize):

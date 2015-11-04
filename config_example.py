@@ -21,7 +21,7 @@ class Config(object):
         phone_number = "YOUR PHONE NUMBER"
 
         intro = """Hi {0}, \n
-I'm an Engineer engineer and I'm really excited to apply for the \
+I'm an Engineer and I'm really excited to apply for the \
 {1} role at {0}. I am passionate about helping businesses use data to \
 understand how to better their products for customers {2}. I believe that {0} \
 is a place where I can contribute to success of the software engineering team \
