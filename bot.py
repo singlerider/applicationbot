@@ -16,6 +16,9 @@ def build_message_text(data):
         resume)
     return full_message
 
+def save_cover_letter(company, message_text):
+    with open('cover_letters/{}_cover_letter.txt'.format(company.replace(" ", "_").lower()), 'w') as f:
+        f.write(message_text)
 
 def update_trello(data, company):
     board_id = data["trello_board"]
@@ -54,6 +57,7 @@ data to understand how to better their products for customers:""")
             message_text)
     if "y" in initialize[1].lower():
         update_trello(data, company)
+    save_cover_letter(company, message_text)
 
 
 if __name__ == "__main__":
