@@ -36,11 +36,11 @@ I am passionate about applying my software development skills to help move \
 {1}\n
 Best Wishes,\n
 {4}""".format(self.company, self.personal_message, from_address, phone_number, name)
-
+        resume = "" # link to your resume
         data = {
             "trello_key": trello_key,
             "trello_secret": trello_secret,
-            "trell_token": trello_token,
+            "trello_token": trello_token,
             "trello_board": trello_board,
             "trello_applied": trello_applied,
             "from_address": from_address,
@@ -52,7 +52,8 @@ Best Wishes,\n
             "name": name,
             "intro": intro,
             "backend": backend,
-            "outro": outro
+            "outro": outro,
+            "resume": resume
         }
 
         return data

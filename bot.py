@@ -11,7 +11,9 @@ def build_message_text(data):
     intro = data["intro"]
     backend = data["backend"]
     outro = data["outro"]
-    full_message = "{}{}{}".format(intro, backend, outro)
+    resume = data["resume"]
+    full_message = "{}{}{}\n\nResume Link: {}".format(intro, backend, outro,
+        resume)
     return full_message
 
 
@@ -26,8 +28,17 @@ def update_trello(data, company):
         trello_token)
 
 
-def send_email():
-    to_address = raw_input("What is the email address of the company?:")
+def send_email(to_address, company, title, description, personal_message, message_text):
+    sender = data["from_address"]
+    to = to_address
+    name = data["name"]
+    subject = "{} at {} ({})".format(title, company, name)
+    #message = CreateMessage(sender, to, subject, message_text)
+    #send = SendMessage(service, 'me', message)
+    print message_text
+
+
+def main(intialize):
     company = raw_input("What's the name of the company?:")
     title = raw_input("What's the job title?:")
     description = raw_input("""I am passionate about helping businesses use \
@@ -36,15 +47,15 @@ data to understand how to better their products for customers:""")
     data = con.message(company, title, description, personal_message)
     print "data: ", data
     message_text =  build_message_text(data)
-    sender = data["from_address"]
-    to = to_address
-    name = data["name"]
-    subject = "{} at {} ({})".format(title, company, name)
-    message = CreateMessage(sender, to, subject, message_text)
-    send = SendMessage(service, 'me', message)
-
-    update_trello(data, company)
-    return message_text
+    print message_text
+    if "y" in initialize[0].lower():
+        to_address = raw_input("What is the email address of the company?:")
+        send_email(to_address, company, title, description, personal_message,
+            message_text)
+    if "y" in initialize[1].lower():
+        update_trello(data, company)
 
 
-print send_email()
+if __name__ == "__main__":
+    initialize = raw_input("Are you sending an email?:"), raw_input("Are you updating your Trello?:")
+    main(initialize)
