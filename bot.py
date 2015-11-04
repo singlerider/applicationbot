@@ -31,13 +31,18 @@ def update_trello(data, company):
         trello_token)
 
 
-def send_email(to_address, company, title, description, personal_message, message_text):
+def send_email(data, to_address, company, title, description, personal_message, message_text):
     sender = data["from_address"]
     to = to_address
     name = data["name"]
+    # LASTNAME_FIRSTNAMEResume.pdf in your root dir
+    filename = [name.split()[1] + "_" +  name.split()[0]][0].upper() + "Resume.pdf"
     subject = "{} at {} ({})".format(title, company, name)
+    # uncomment line below to send an email WITH an attachment (your resume)
+    message = CreateMessageWithAttachment(sender, to, subject, message_text, '', filename)
+    # uncomment line below to send email WITHOUT an attachment
     #message = CreateMessage(sender, to, subject, message_text)
-    #send = SendMessage(service, 'me', message)
+    send = SendMessage(service, 'me', message)
     print message_text
 
 
@@ -53,7 +58,7 @@ data to understand how to better their products for customers:""")
     print message_text
     if "y" in initialize[0].lower():
         to_address = raw_input("What is the email address of the company?:")
-        send_email(to_address, company, title, description, personal_message,
+        send_email(data, to_address, company, title, description, personal_message,
             message_text)
     if "y" in initialize[1].lower():
         update_trello(data, company)

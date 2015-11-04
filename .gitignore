@@ -3,3 +3,4 @@ config.py
 client_secret.json
 cover_letters/*.txt
 **.DS_Store
+**.pdf
