@@ -12,8 +12,7 @@ def build_message_text(data):
     backend = data["backend"]
     outro = data["outro"]
     resume = data["resume"]
-    full_message = "{}{}{}\n\nResume Link: {}".format(intro, backend, outro,
-        resume)
+    full_message = "{}{}{}".format(intro, backend, outro)
     return full_message
 
 
@@ -22,14 +21,15 @@ def save_cover_letter(company, message_text):
         f.write(message_text)
 
 
-def update_trello(data, company):
+def update_trello(data, company, message_text):
     board_id = data["trello_board"]
     list_id = data["trello_applied"]
     trello_key = data["trello_key"]
     trello_token = data["trello_token"]
-    card_name = "{}. {}".format((len(get_cards(board_id, trello_key,
-        trello_token)) + 1), company)
+    card_number = len(get_cards(board_id, trello_key, trello_token))
+    card_name = "{}. {}".format((card_number + 1), company)
     insert_card(board_id, list_id, card_name, company, trello_key, trello_token)
+    insert_comment(card_number, message_text, trello_key, trello_token)
     print "Trello Updated"
 
 
@@ -62,7 +62,7 @@ data to understand how to better their products for customers:""")
         send_email(data, to_address, company, title, description, personal_message,
             message_text)
     if "y" in initialize[1].lower():
-        update_trello(data, company)
+        update_trello(data, company, message_taxt)
     save_cover_letter(company, message_text)
 
 

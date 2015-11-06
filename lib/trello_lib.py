@@ -26,6 +26,10 @@ fields=name,desc&key={}&token={}".format(board_id, trello_key, trello_token)
     }
     return lists
 
+def get_comments():
+    pass
+
+
 # To increment the number of jobs applied to, add the length of the result of
 # the below function plus one
 def get_cards(board_id, trello_key, trello_token):
@@ -35,11 +39,20 @@ def get_cards(board_id, trello_key, trello_token):
     data = json.loads(resp.content)
     return data
 
+
+def insert_comment(card_number, text, trello_key, trello_token):
+    card_id = [x["id"] for x in data if card_number + "." in x["name"]][0]
+    url = "https://api.trello.com/1/cards/{}/actions/comments?text={}&key={}&token={}".format(
+        card_id, text, trello_key, trello_token)
+    resp = requests.post(url=url)
+    data = json.loads(resp.content)
+    print "Trello Comment Added"
+
+
 def insert_card(board_id, list_id, card_name, company, trello_key, trello_token):
     url = "https://api.trello.com/1/lists/{}/cards?name={}&key={}&token={}".format(
         list_id, card_name, trello_key, trello_token)
     resp = requests.post(url=url)
     data = json.loads(resp.content)
-
-    #print insert_card(trello_applied, card_name)
+    print "Trello Card Inserted"
     return data

@@ -18,9 +18,27 @@ thoughts!" Who knows? Maybe you'll get the job!
 Follow Google's Python Quickstart at:
 https://developers.google.com/gmail/api/quickstart/python
 
-Make sure to run
+I would recommend running this in a virtual environment to keep your
+dependencies in check. If you'd like to do that, run:
 
-`pip install --upgrade google-api-python-client`
+`sudo pip install virtualenv`
+
+Followed by:
+
+`virtualenv venv`
+
+This will create an empty virtualenv in your project directory in a folder
+called "venv." To enable it, run:
+
+`source venv/bin/activate`
+
+and your console window will be in that virtualenv state. To deactivate, run:
+
+`deactivate`
+
+To install all dependencies locally, run:
+
+`pip install -r requirements.txt`
 
 in order to download the dependencies. There's a helpful wizard for setting up
 authentication at:

@@ -4,3 +4,4 @@ client_secret.json
 cover_letters/*.txt
 **.DS_Store
 **.pdf
+venv/*

@@ -2,16 +2,24 @@
 # -*- coding: utf-8 -*-
 
 from BeautifulSoup import BeautifulSoup
+from fake_useragent import UserAgent
 import requests
 
-def scrape_indeed():
-    url = 'http://hire.jobvite.com/CompanyJobs/Careers.aspx?k=Job&c=qoz9VfwL&j=oKni1fwa&s=Indeed'
+ua = UserAgent()
+# ua.ie, ua.msie, ua['Internet Explorer'], ua.opera, ua.chrome, ua.google,
+# ua['google chrome'], ua.firefox, ua.ff, ua.safari, ua.random
+
+url = ""
+
+def scrape(url):
+    url = url
     response = requests.get(url)
+    headers = {'User-Agent': ua.chrome}
     html = response.content
     soup = BeautifulSoup(html)
     print [x.string for x in soup.findAll('a')]
 
-scrape_indeed()
+scrape(url)
 
 """
 soup.prettify()
