@@ -69,20 +69,6 @@ https://trello.com/1/authorize?key=YOURAPIKEY&name=My+App&expiration=30days&resp
 
 Once authorized, you'll be able to grab your token from the address bar
 
-### Mac Notes
-
-There's an issue with Matplotlib installed as a service on Mac. Simply do the
-following to eliminate the issue:
-
-In your home directory, there is a directory called ~/.matplotlib. Create a file
-called "matplotlibrc" inside the folder "~/.matplotlib/":
-
-`touch ~/.matplotlib/matplotlibrc`
-
-and add the following line and save:
-
-`backend: TkAgg`
-
 ## To Run
 
 Once you have all the boring stuff out of the way and your Google account is

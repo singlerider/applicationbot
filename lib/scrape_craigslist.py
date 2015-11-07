@@ -23,8 +23,6 @@ def text_cleaner(website):
     #print soup_obj
     text = soup_obj[0].get_text()
     #print text
-    #text = soup_obj.get_text() # Get the text from this
-    #print text
     lines = (line.strip() for line in text.splitlines()) # break into lines
     chunks = (phrase.strip() for line in lines for phrase in line.split("  ")) # break multi-headlines into a line each
     def chunk_space(chunk):
@@ -89,13 +87,13 @@ def skills_info(city = None, state = None):
                                       # search result page
     job_listings = [] # Store all our descriptions in this list
     job_descriptions = {}
-    for i in range(1,num_pages + 1): # Loop through all of our search result pages
-        print "Getting page {} out of {} pages".format(i, num_pages + 1)
+    for i in xrange(1,num_pages + 1): # Loop through all of our search result pages
+        print "Getting page {} out of {} pages".format(i, num_pages)
         start_num = (i*100) - 100 # Assign the multiplier of 100 to view the pages we want
         current_page = 'https://sfbay.craigslist.org/search/jjj?s={}&query={}'.format(start_num, final_job)
         print "i:", i, "current_page:", current_page, "range:", range(1,num_pages + 1)
         print "num_pages:", num_pages, "start_num:", start_num
-        # Now that we can view the correct 10 job returns, start collecting the text samples from each
+        # Now that we can view the correct 100 job returns, start collecting the text samples from each
         try:
             html_page = urllib2.urlopen(current_page).read() # Get the page
             print current_page
@@ -113,6 +111,22 @@ def skills_info(city = None, state = None):
             else:
                 job_descriptions[description] = True
             print description
+            try:
+                site = urllib2.urlopen(job_URLS[j]).read()
+            except Exception as error:
+                print error
+                continue
+            local_soup = BeautifulSoup(site)
+            button_url = local_soup.find(class_ = "reply_button js-only")
+            if button_url is None:
+                button_url = "Reply Below"
+            else:
+                page = job_URLS[j].split("/")[5].split(".")[0]
+                print page
+                url = "https://sfbay.craigslist.org/reply/sfo/sof/{}".format(page)
+                email_soup = BeautifulSoup(urllib2.urlopen(url).read())
+                email_address = email_soup.find(class_="anonemail")
+                print "email_address.get_text():", email_address.get_text()
             listing = text_cleaner(job_URLS[j])
             print "Page: {} | Listing {} complete".format(i, j + 1)
             job_listings.append(listing) #print final_description
