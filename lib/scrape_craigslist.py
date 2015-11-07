@@ -9,6 +9,7 @@ from collections import Counter # Keep track of our term counts
 from nltk.corpus import stopwords # Filter out stopwords, such as 'the', 'or', 'and'
 import pandas as pd # For converting results to a dataframe and bar chart plots
 
+
 def text_cleaner(website):
     '''
     This function just cleans up the raw html so that I can look at it.
@@ -64,17 +65,14 @@ def skills_info(city = None, state = None):
     '''
 
     final_job = raw_input("What job title are you looking for?:")
-    final_job = final_job.replace(" ", "+") # searching for data scientist exact fit("data scientist" on Indeed search)
-
-    # Make sure the city specified works properly if it has more than one word (such as San Francisco)
-
+    final_job = final_job.replace(" ", "+") # searching for data scientist exact fit("data scientist" on Craigslist search)
     final_site_list = ["https://sfbay.craigslist.org/search/jjj", "?query=", final_job]
     final_site = ''.join(final_site_list) # Merge the html address together into one string
     base_url = 'https://sfbay.craigslist.org'
     try:
         html = urllib2.urlopen(final_site).read() # Open up the front page of our search first
     except Exception as error:
-        print "That didn't work because:", error # In case the city is invalid
+        print error # In case the city is invalid
         return
     soup = BeautifulSoup(html) # Get the html from the first page
     # Now find out how many jobs there were
@@ -109,7 +107,7 @@ def skills_info(city = None, state = None):
             if description in job_descriptions:
                 continue # prevents scraping duplicate pages
             else:
-                job_descriptions[description] = True
+                job_descriptions[description] = True # inserts job description as a key
             print description
             try:
                 site = urllib2.urlopen(job_URLS[j]).read()
@@ -121,12 +119,12 @@ def skills_info(city = None, state = None):
             if button_url is None:
                 button_url = "Reply Below"
             else:
-                page = job_URLS[j].split("/")[5].split(".")[0]
-                print page
+                page = job_URLS[j].split("/")[5].split(".")[0] # separates the url into what we need
                 url = "https://sfbay.craigslist.org/reply/sfo/sof/{}".format(page)
                 email_soup = BeautifulSoup(urllib2.urlopen(url).read())
                 email_address = email_soup.find(class_="anonemail")
-                print "email_address.get_text():", email_address.get_text()
+                email_address = email_address.get_text()
+                print "email_address:", email_address
             listing = text_cleaner(job_URLS[j])
             print "Page: {} | Listing {} complete".format(i, j + 1)
             job_listings.append(listing) #print final_description
@@ -172,10 +170,7 @@ def skills_info(city = None, state = None):
                                                                                     #  having that term
     # Sort the data for plotting purposes
     final_frame.sort_values(by= 'NumPostings', ascending = False, inplace = True)
-    # Get it ready for a bar plot
     return final_frame # End of the function
 
-#seattle_info = skills_info(city = 'Seattle', state = 'WA')
 silicon_val_info = skills_info(city = 'San Francisco', state = 'CA')
-#chicago_info = skills_info(city = 'Chicago', state = 'IL')
 print silicon_val_info

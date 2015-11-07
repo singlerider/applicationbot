@@ -26,10 +26,14 @@ def update_trello(data, company, message_text):
     list_id = data["trello_applied"]
     trello_key = data["trello_key"]
     trello_token = data["trello_token"]
-    card_number = len(get_cards(board_id, trello_key, trello_token))
-    card_name = "{}. {}".format((card_number + 1), company)
+    desc = "Job Description Goes Here"
+    card_number = len(get_cards(board_id, trello_key, trello_token)) + 1
+    card_name = "{}. {}".format((card_number), company)
     insert_card(board_id, list_id, card_name, company, trello_key, trello_token)
-    insert_comment(card_number, message_text, trello_key, trello_token)
+    cards_info = get_cards(board_id, trello_key, trello_token)
+    card_id = [x["id"] for x in cards_info if str(card_number) + "." in x["name"]][0]
+    insert_comment(card_id, message_text, trello_key, trello_token)
+    edit_description(card_id, desc, trello_key, trello_token)
     print "Trello Updated"
 
 
@@ -62,7 +66,7 @@ data to understand how to better their products for customers:""")
         send_email(data, to_address, company, title, description, personal_message,
             message_text)
     if "y" in initialize[1].lower():
-        update_trello(data, company, message_taxt)
+        update_trello(data, company, message_text)
     save_cover_letter(company, message_text)
 
 
