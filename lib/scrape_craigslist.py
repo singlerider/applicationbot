@@ -67,34 +67,23 @@ def skills_info(city = None, state = None):
     final_job = final_job.replace(" ", "+") # searching for data scientist exact fit("data scientist" on Indeed search)
 
     # Make sure the city specified works properly if it has more than one word (such as San Francisco)
-    if city is not None:
-        final_city = city.split()
-        final_city = '+'.join(word for word in final_city)
-        final_site_list = ['http://www.indeed.com/jobs?q=%22', final_job, '%22&l=', final_city,
-                    '%2C+', state] # Join all of our strings together so that indeed will search correctly
-    else:
-        final_site_list = ['http://www.indeed.com/jobs?q="', final_job, '"']
+
+    final_site_list = ['https://sfbay.craigslist.org/search/jjj?query="', final_job, '"']
     final_site = ''.join(final_site_list) # Merge the html address together into one string
-    base_url = 'http://www.indeed.com'
+    base_url = 'https://sfbay.craigslist.org'
     try:
         html = urllib2.urlopen(final_site).read() # Open up the front page of our search first
-    except:
-        'That city/state combination did not have any jobs. Exiting . . .' # In case the city is invalid
+    except Exception as error:
+        print "That didn't work because:", error # In case the city is invalid
         return
     soup = BeautifulSoup(html) # Get the html from the first page
     # Now find out how many jobs there were
-    num_jobs_area = soup.find(id = 'searchCount').string.encode('utf-8') # Now extract the total number of jobs found
-                                                                        # The 'searchCount' object has this
-    job_numbers = re.findall('\d+', num_jobs_area) # Extract the total jobs found from the search result
-    if len(job_numbers) > 3: # Have a total number of jobs greater than 1000
-        total_num_jobs = (int(job_numbers[2])*1000) + int(job_numbers[3])
-    else:
-        total_num_jobs = int(job_numbers[2])
-    city_title = city
-    if city is None:
-        city_title = 'Nationwide'
-    print 'There were', total_num_jobs, 'jobs found,', city_title # Display how many jobs were found
-    num_pages = total_num_jobs/10 # This will be how we know the number of times we need to iterate over each new
+    total_num_jobs = int(soup.find(class_= "totalcount").string.encode('utf-8'))
+    # Now extract the total number of jobs found - The 'totalcount' object has this
+    #print "num_jobs_area", num_jobs_area
+    print "There were {} jobs found".format(total_num_jobs)
+    # Display how many jobs were found
+    num_pages = total_num_jobs/100 # This will be how we know the number of times we need to iterate over each new
                                       # search result page
     job_descriptions = [] # Store all our descriptions in this list
     for i in xrange(1,num_pages+1): # Loop through all of our search result pages
@@ -107,9 +96,10 @@ def skills_info(city = None, state = None):
         except:
             print "TIMEOUT FOR PAGE {}".format(i)
         page_obj = BeautifulSoup(html_page) # Locate all of the job links
-        job_link_area = page_obj.find(id = 'resultsCol') # The center column on the page where the job postings exist
-        job_URLS = [base_url + link.get('href') for link in job_link_area.find_all('a')] # Get the URLS for the jobs
-        job_URLS = filter(lambda x:'clk' in x, job_URLS) # Now get just the job related URLS
+        job_link_area = page_obj.find(class_= 'content') # The center column on the page where the job postings exist
+        #print "job_link_area", job_link_area
+        job_URLS = [base_url + link.get('href') for link in job_link_area.find_all("a", {"class" : "i"})]
+        print job_URLS
         print "Job URLs:", "{} on Page {}".format(len(job_URLS), i)
         for j in xrange(0,len(job_URLS)):
             final_description = text_cleaner(job_URLS[j])
