@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+# -*- coding: utf-8 -*-
 
 from bs4 import BeautifulSoup # For HTML parsing
 import urllib2 # Website connections
@@ -7,7 +8,6 @@ from time import sleep # To prevent overwhelming the server between connections
 from collections import Counter # Keep track of our term counts
 from nltk.corpus import stopwords # Filter out stopwords, such as 'the', 'or', 'and'
 import pandas as pd # For converting results to a dataframe and bar chart plots
-
 
 def text_cleaner(website):
     '''
@@ -124,29 +124,33 @@ def skills_info(city = None, state = None):
     [doc_frequency.update(item) for item in job_descriptions] # List comp
     # Now we can just look at our final dict list inside doc_frequency
     # Obtain our key terms and store them in a dict. These are the key data science skills we are looking for
-    prog_lang_dict = Counter({'R':doc_frequency['r'], 'Python':doc_frequency['python'],
+    lang_dict = Counter({
+                    'R':doc_frequency['r'], 'Python':doc_frequency['python'],
                     'Java':doc_frequency['java'], 'C++':doc_frequency['c++'],
-                    'Ruby':doc_frequency['ruby'],
+                    'Ruby':doc_frequency['ruby'], 'C': doc_frequency['c'],
                     'Perl':doc_frequency['perl'], 'Matlab':doc_frequency['matlab'],
                     'JavaScript':doc_frequency['javascript'], 'Scala': doc_frequency['scala'],
                     'PHP': doc_frequency['php'], 'HTML': doc_frequency['html'],
-                    'CSS': doc_frequency['css']
+                    'CSS': doc_frequency['css'], 'Objective-C': doc_frequency['objective-c'],
+                    'Go': doc_frequency['go']
                     })
-    analysis_tool_dict = Counter({'Excel':doc_frequency['excel'],  'Tableau':doc_frequency['tableau'],
+    tool_dict = Counter({
+                        'Excel':doc_frequency['excel'],  'Tableau':doc_frequency['tableau'],
                         'D3.js':doc_frequency['d3.js'], 'SAS':doc_frequency['sas'],
-                        'SPSS':doc_frequency['spss'], 'D3':doc_frequency['d3']
+                        'SPSS':doc_frequency['spss'], 'D3':doc_frequency['d3'],
+                        'Hadoop': doc_frequency['hadoop'], 'RabbitMQ': doc_frequency['rabbitmq']
                         })
-    hadoop_dict = Counter({'Hadoop':doc_frequency['hadoop'], 'MapReduce':doc_frequency['mapreduce'],
-                'Spark':doc_frequency['spark'], 'Pig':doc_frequency['pig'],
-                'Hive':doc_frequency['hive'], 'Shark':doc_frequency['shark'],
-                'Oozie':doc_frequency['oozie'], 'ZooKeeper':doc_frequency['zookeeper'],
-                'Flume':doc_frequency['flume'], 'Mahout':doc_frequency['mahout']
+    web_dict = Counter({
+                'Backbone':doc_frequency['backbone'], 'Ember':doc_frequency['ember'],
+                'React':doc_frequency['react'], 'Rails':doc_frequency['rails'],
+                'Angular':doc_frequency['angular'], 'Node':doc_frequency['node']
                 })
-    database_dict = Counter({'SQL':doc_frequency['sql'], 'NoSQL':doc_frequency['nosql'],
+    database_dict = Counter({
+                    'SQL':doc_frequency['sql'], 'NoSQL':doc_frequency['nosql'],
                     'HBase':doc_frequency['hbase'], 'Cassandra':doc_frequency['cassandra'],
                     'MongoDB':doc_frequency['mongodb'], 'MySQL': doc_frequency['mysql']
                     })
-    overall_total_skills = prog_lang_dict + analysis_tool_dict + hadoop_dict + database_dict # Combine our Counter objects
+    overall_total_skills = lang_dict + tool_dict + web_dict + database_dict # Combine our Counter objects
     final_frame = pd.DataFrame(overall_total_skills.items(), columns = ['Term', 'NumPostings']) # Convert these terms to a
                                                                                                 # dataframe
     # Change the values to reflect a percentage of the postings
@@ -155,11 +159,7 @@ def skills_info(city = None, state = None):
     # Sort the data for plotting purposes
     final_frame.sort_values(by= 'NumPostings', ascending = False, inplace = True)
     # Get it ready for a bar plot
-    final_plot = final_frame.plot(x = 'Term', kind = 'bar', legend = None,
-                            title = 'Percentage of Data Scientist Job Ads with a Key Skill, ' + city_title)
-    final_plot.set_ylabel('Percentage Appearing in Job Ads')
-    fig = final_plot.get_figure() # Have to convert the pandas plot object to a matplotlib object
-    return fig, final_frame # End of the function
+    return final_frame # End of the function
 
 #seattle_info = skills_info(city = 'Seattle', state = 'WA')
 silicon_val_info = skills_info(city = 'San Francisco', state = 'CA')
