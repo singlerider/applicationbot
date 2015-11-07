@@ -5,7 +5,7 @@ from BeautifulSoup import BeautifulSoup
 from fake_useragent import UserAgent
 import requests
 
-ua = UserAgent()
+ua = UserAgent() # for faking a browser
 # ua.ie, ua.msie, ua['Internet Explorer'], ua.opera, ua.chrome, ua.google,
 # ua['google chrome'], ua.firefox, ua.ff, ua.safari, ua.random
 
@@ -13,8 +13,8 @@ url = ""
 
 def scrape(url):
     url = url
-    response = requests.get(url)
     headers = {'User-Agent': ua.chrome}
+    response = requests.get(url, headers=headers)
     html = response.content
     soup = BeautifulSoup(html)
     print [x.string for x in soup.findAll('a')]

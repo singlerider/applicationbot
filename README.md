@@ -15,8 +15,10 @@ thoughts!" Who knows? Maybe you'll get the job!
 
 ## Installation
 
-Follow Google's Python Quickstart at:
-https://developers.google.com/gmail/api/quickstart/python
+Setting up a virtual environment (ideally), installing dependencies, and gaining
+credentials.
+
+### Virtual Environment
 
 I would recommend running this in a virtual environment to keep your
 dependencies in check. If you'd like to do that, run:
@@ -36,13 +38,50 @@ and your console window will be in that virtualenv state. To deactivate, run:
 
 `deactivate`
 
-To install all dependencies locally, run:
+### Dependencies
+
+To install all dependencies locally (preferably inside your activated
+virtualenv), run:
 
 `pip install -r requirements.txt`
 
-in order to download the dependencies. There's a helpful wizard for setting up
-authentication at:
+### Gmail
+
+For more information, follow Google's Python Quickstart at:
+
+https://developers.google.com/gmail/api/quickstart/python
+
+There's a helpful wizard for setting up authentication for GMail's API at:
+
 https://console.developers.google.com/flows/enableapi?apiid=gmail
+
+### Trello
+
+You will also need to attain Trello credentials by following these steps:
+
+Apply for an API key at:
+
+https://developers.trello.com/
+
+To get your Trello Token, go here in a browser and replace YOURAPIKEY:
+
+https://trello.com/1/authorize?key=YOURAPIKEY&name=My+App&expiration=30days&response_type=token&scope=read,write
+
+Once authorized, you'll be able to grab your token from the address bar
+
+### Mac Notes
+
+There's an issue with Matplotlib installed as a service on Mac. Simply do the
+following to eliminate the issue:
+
+In your home directory, there is a directory called ~/.matplotlib. Create a file
+called "matplotlibrc" inside the folder "~/.matplotlib/":
+
+`touch ~/.matplotlib/matplotlibrc`
+
+and add the following line and save:
+
+`backend: TkAgg`
 
 ## To Run
 
