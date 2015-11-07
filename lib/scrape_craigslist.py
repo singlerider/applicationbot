@@ -19,10 +19,12 @@ def text_cleaner(website):
         site = urllib2.urlopen(website).read() # Connect to the job posting
     except:
         return   # Need this in case the website isn't there anymore or some other weird connection problem
-    soup_obj = BeautifulSoup(site) # Get the html from the site
-    for script in soup_obj(["script", "style"]):
-        script.extract() # Remove these two elements from the BS4 object
-    text = soup_obj.get_text() # Get the text from this
+    soup_obj = BeautifulSoup(site).findAll(id='postingbody') # Get the html from the site
+    #print soup_obj
+    text = soup_obj[0].get_text()
+    #print text
+    #text = soup_obj.get_text() # Get the text from this
+    #print text
     lines = (line.strip() for line in text.splitlines()) # break into lines
     chunks = (phrase.strip() for line in lines for phrase in line.split("  ")) # break multi-headlines into a line each
     def chunk_space(chunk):
@@ -68,7 +70,7 @@ def skills_info(city = None, state = None):
 
     # Make sure the city specified works properly if it has more than one word (such as San Francisco)
 
-    final_site_list = ['https://sfbay.craigslist.org/search/jjj?query="', final_job, '"']
+    final_site_list = ["https://sfbay.craigslist.org/search/jjj", "?query=", final_job]
     final_site = ''.join(final_site_list) # Merge the html address together into one string
     base_url = 'https://sfbay.craigslist.org'
     try:
@@ -83,35 +85,43 @@ def skills_info(city = None, state = None):
     #print "num_jobs_area", num_jobs_area
     print "There were {} jobs found".format(total_num_jobs)
     # Display how many jobs were found
-    num_pages = total_num_jobs/100 # This will be how we know the number of times we need to iterate over each new
+    num_pages = (total_num_jobs/100) + 1# This will be how we know the number of times we need to iterate over each new
                                       # search result page
-    job_descriptions = [] # Store all our descriptions in this list
-    for i in xrange(1,num_pages+1): # Loop through all of our search result pages
+    job_listings = [] # Store all our descriptions in this list
+    job_descriptions = {}
+    for i in range(1,num_pages + 1): # Loop through all of our search result pages
         print "Getting page {} out of {} pages".format(i, num_pages + 1)
-        start_num = str(i*10) # Assign the multiplier of 10 to view the pages we want
-        current_page = ''.join([final_site, '&start=', start_num])
+        start_num = (i*100) - 100 # Assign the multiplier of 100 to view the pages we want
+        current_page = 'https://sfbay.craigslist.org/search/jjj?s={}&query={}'.format(start_num, final_job)
+        print "i:", i, "current_page:", current_page, "range:", range(1,num_pages + 1)
+        print "num_pages:", num_pages, "start_num:", start_num
         # Now that we can view the correct 10 job returns, start collecting the text samples from each
         try:
             html_page = urllib2.urlopen(current_page).read() # Get the page
+            print current_page
         except:
             print "TIMEOUT FOR PAGE {}".format(i)
         page_obj = BeautifulSoup(html_page) # Locate all of the job links
-        job_link_area = page_obj.find(class_= 'content') # The center column on the page where the job postings exist
-        #print "job_link_area", job_link_area
-        job_URLS = [base_url + link.get('href') for link in job_link_area.find_all("a", {"class" : "i"})]
-        print job_URLS
+        job_URLS = [base_url + link.get('href') for link in soup.findAll(class_='hdrlnk')]
+        descriptions = [desc for desc in soup.findAll(class_= "hdrlnk")]
+        #print job_URLS
         print "Job URLs:", "{} on Page {}".format(len(job_URLS), i)
         for j in xrange(0,len(job_URLS)):
-            final_description = text_cleaner(job_URLS[j])
+            description = descriptions[j].get_text()
+            if description in job_descriptions:
+                continue # prevents scraping duplicate pages
+            else:
+                job_descriptions[description] = True
+            print description
+            listing = text_cleaner(job_URLS[j])
             print "Page: {} | Listing {} complete".format(i, j + 1)
-            if final_description: # So that we only append when the website was accessed correctly
-                job_descriptions.append(final_description)
-            sleep(.5) # So that we don't be jerks. If you have a very fast internet connection you could hit the server a lot!
+            job_listings.append(listing) #print final_description
+            sleep(1) # So that we don't be jerks. If you have a very fast internet connection you could hit the server a lot!
     print 'Done with collecting the job postings!'
-    print 'There were', len(job_descriptions), 'jobs successfully found.'
+    print 'There were', len(job_listings), 'jobs successfully found.'
     print final_job
     doc_frequency = Counter() # This will create a full counter of our terms.
-    [doc_frequency.update(item) for item in job_descriptions] # List comp
+    [doc_frequency.update(item) for item in job_listings] # List comp
     # Now we can just look at our final dict list inside doc_frequency
     # Obtain our key terms and store them in a dict. These are the key data science skills we are looking for
     lang_dict = Counter({
@@ -144,7 +154,7 @@ def skills_info(city = None, state = None):
     final_frame = pd.DataFrame(overall_total_skills.items(), columns = ['Term', 'NumPostings']) # Convert these terms to a
                                                                                                 # dataframe
     # Change the values to reflect a percentage of the postings
-    final_frame.NumPostings = (final_frame.NumPostings)*100/len(job_descriptions) # Gives percentage of job postings
+    final_frame.NumPostings = (final_frame.NumPostings)*100/len(job_listings) # Gives percentage of job postings
                                                                                     #  having that term
     # Sort the data for plotting purposes
     final_frame.sort_values(by= 'NumPostings', ascending = False, inplace = True)
