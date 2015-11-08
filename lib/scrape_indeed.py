@@ -8,7 +8,12 @@ from time import sleep # To prevent overwhelming the server between connections
 from collections import Counter # Keep track of our term counts
 from nltk.corpus import stopwords # Filter out stopwords, such as 'the', 'or', 'and'
 import pandas as pd # For converting results to a dataframe and bar chart plots
-
+"""
+import socks
+import socket
+socks.setdefaultproxy(proxy_type=socks.PROXY_TYPE_SOCKS5, addr="127.0.0.1", port=9050)
+socket.socket = socks.socksocket
+"""
 def text_cleaner(website):
     '''
     This function just cleans up the raw html so that I can look at it.

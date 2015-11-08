@@ -8,7 +8,8 @@ from time import sleep # To prevent overwhelming the server between connections
 from collections import Counter # Keep track of our term counts
 from nltk.corpus import stopwords # Filter out stopwords, such as 'the', 'or', 'and'
 import pandas as pd # For converting results to a dataframe and bar chart plots
-
+import random
+import bot
 
 def text_cleaner(website):
     '''
@@ -45,23 +46,9 @@ def text_cleaner(website):
     return text
 
 
-#sample = text_cleaner('http://www.indeed.com/viewjob?jk=5505e59f8e5a32a4&q=%22data+scientist%22&tk=19ftfgsmj19ti0l3&from=web&advn=1855944161169178&sjdu=QwrRXKrqZ3CNX5W-O9jEvWC1RT2wMYkGnZrqGdrncbKqQ7uwTLXzT1_ME9WQ4M-7om7mrHAlvyJT8cA_14IV5w&pub=pub-indeed')
-#print sample[:20] # Just show the first 20 words
-
-def skills_info(city = None, state = None):
+def scrape_and_apply(data_dict):
     '''
-    This function will take a desired city/state and look for all new job postings
-    on Indeed.com. It will crawl all of the job postings and keep track of how many
-    use a preset list of typical data science skills. The final percentage for each skill
-    is then displayed at the end of the collation.
-
-    Inputs: The location's city and state. These are optional. If no city/state is input,
-    the function will assume a national search (this can take a while!!!).
-    Input the city/state as strings, such as skills_info('Chicago', 'IL').
-    Use a two letter abbreviation for the state.
-
-    Output: A bar chart showing the most commonly desired skills in the job market for
-    a data scientist.
+    TODO: UPDATE DESCRIPTION
     '''
 
     final_job = raw_input("What job title are you looking for?:")
@@ -98,12 +85,13 @@ def skills_info(city = None, state = None):
         except:
             print "TIMEOUT FOR PAGE {}".format(i)
         page_obj = BeautifulSoup(html_page) # Locate all of the job links
-        job_URLS = [base_url + link.get('href') for link in soup.findAll(class_='hdrlnk')]
+        job_URLS = [base_url + link.get('href') for link in page_obj.findAll(class_='hdrlnk')]
         descriptions = [desc for desc in soup.findAll(class_= "hdrlnk")]
         #print job_URLS
         print "Job URLs:", "{} on Page {}".format(len(job_URLS), i)
         for j in xrange(0,len(job_URLS)):
             description = descriptions[j].get_text()
+            data["company"] = description
             if description in job_descriptions:
                 continue # prevents scraping duplicate pages
             else:
@@ -116,26 +104,35 @@ def skills_info(city = None, state = None):
                 continue
             local_soup = BeautifulSoup(site)
             button_url = local_soup.find(class_ = "reply_button js-only")
+            listing = text_cleaner(job_URLS[j])
+            data["listing"] = listing
             if button_url is None:
-                button_url = "Reply Below"
+                #button_url = "Reply Below"
+                continue # Nothing to do without an available email yet
             else:
                 page = job_URLS[j].split("/")[5].split(".")[0] # separates the url into what we need
                 url = "https://sfbay.craigslist.org/reply/sfo/sof/{}".format(page)
+                sleep(random.uniform(5.00, 10.00)) # Another request is being made here. Let's be nice about it
                 email_soup = BeautifulSoup(urllib2.urlopen(url).read())
                 email_address = email_soup.find(class_="anonemail")
-                email_address = email_address.get_text()
-                print "email_address:", email_address
-            listing = text_cleaner(job_URLS[j])
+                if email_address is not None:
+                    email_address = email_address.get_text()
+                    # I will expand on the below variable's purpose later
+                    message_text = bot.build_message_text(data) # Generate a unique cover letter from information on the page
+                    if "y" in data["initialize"][0]:
+                        bot.send_email(data, email_address, description, message_text)
+                    if "y" in data["initialize"][1] and "y" in data["initialize"][2]:
+                        bot.update_trello(data, message_text)
             print "Page: {} | Listing {} complete".format(i, j + 1)
             job_listings.append(listing) #print final_description
-            sleep(1) # So that we don't be jerks. If you have a very fast internet connection you could hit the server a lot!
+            sleep(random.uniform(5.00, 10.00)) # So that we don't be jerks. If you have a very fast internet connection you could hit the server a lot!
     print 'Done with collecting the job postings!'
     print 'There were', len(job_listings), 'jobs successfully found.'
     print final_job
-    doc_frequency = Counter() # This will create a full counter of our terms.
+    doc_frequency = Counter() # This will create a full counter of our terms
     [doc_frequency.update(item) for item in job_listings] # List comp
     # Now we can just look at our final dict list inside doc_frequency
-    # Obtain our key terms and store them in a dict. These are the key data science skills we are looking for
+    # Obtain our key terms and store them in a dict. These are the key skills we are looking for
     lang_dict = Counter({
                     'R':doc_frequency['r'], 'Python':doc_frequency['python'],
                     'Java':doc_frequency['java'], 'C++':doc_frequency['c++'],
@@ -171,6 +168,3 @@ def skills_info(city = None, state = None):
     # Sort the data for plotting purposes
     final_frame.sort_values(by= 'NumPostings', ascending = False, inplace = True)
     return final_frame # End of the function
-
-silicon_val_info = skills_info(city = 'San Francisco', state = 'CA')
-print silicon_val_info

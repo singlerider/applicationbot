@@ -55,7 +55,7 @@ credentials = get_credentials()
 http = credentials.authorize(httplib2.Http())
 service = discovery.build('gmail', 'v1', http=http)
 
-def SendMessage(service, user_id, message):
+def SendMessage(service, user_id, message, send_to):
   """Send an email message.
 
   Args:
@@ -70,7 +70,7 @@ def SendMessage(service, user_id, message):
   try:
     message = (service.users().messages().send(userId=user_id, body=message)
                .execute())
-    print 'Message Sent: %s' % message['id']
+    print "Message Sent to {}".format(send_to)
     return message
   except errors.HttpError, error:
     print 'An error occurred: %s' % error
