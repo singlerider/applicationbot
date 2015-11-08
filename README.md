@@ -55,6 +55,8 @@ There's a helpful wizard for setting up authentication for GMail's API at:
 
 https://console.developers.google.com/flows/enableapi?apiid=gmail
 
+Make sure to keep your `client.json` file in your project's root directory.
+
 ### Trello
 
 You will also need to attain Trello credentials by following these steps:
@@ -67,7 +69,9 @@ To get your Trello Token, go here in a browser and replace YOURAPIKEY:
 
 https://trello.com/1/authorize?key=YOURAPIKEY&name=My+App&expiration=30days&response_type=token&scope=read,write
 
-Once authorized, you'll be able to grab your token from the address bar
+Once authorized, you'll be able to grab your token from the address bar.
+
+Store these values in `config.py`.
 
 ## To Run
 

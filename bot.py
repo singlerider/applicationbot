@@ -4,6 +4,8 @@
 from config import Config
 from lib.send_mail import *
 from lib.trello_lib import *
+import lib.scrape_craigslist
+import lib.scrape_indeed
 
 con = Config()
 
@@ -21,12 +23,13 @@ def save_cover_letter(company, message_text):
         f.write(message_text)
 
 
-def update_trello(data, company, message_text):
+def update_trello(data, message_text):
     board_id = data["trello_board"]
     list_id = data["trello_applied"]
     trello_key = data["trello_key"]
     trello_token = data["trello_token"]
-    desc = "Job Description Goes Here"
+    desc = data["listing"]
+    company = data["company"]
     card_number = len(get_cards(board_id, trello_key, trello_token)) + 1
     card_name = "{}. {}".format((card_number), company)
     insert_card(board_id, list_id, card_name, company, trello_key, trello_token)
@@ -37,18 +40,17 @@ def update_trello(data, company, message_text):
     print "Trello Updated"
 
 
-def send_email(data, to_address, company, title, description, personal_message, message_text):
+def send_email(data, to_address, title, message_text):
     sender = data["from_address"]
-    to = to_address
     name = data["name"]
     # LASTNAME_FIRSTNAMEResume.pdf in your root dir
     filename = [name.split()[1] + "_" +  name.split()[0]][0].upper() + "Resume.pdf"
-    subject = "{} at {} ({})".format(title, company, name)
+    subject = "{} Job Posting ({})".format(title, name)
     # uncomment line below to send an email WITH an attachment (your resume)
-    message = CreateMessageWithAttachment(sender, to, subject, message_text, '', filename)
+    message = CreateMessageWithAttachment(sender, to_address, subject, message_text, '', filename)
     # uncomment line below to send email WITHOUT an attachment
     #message = CreateMessage(sender, to, subject, message_text)
-    send = SendMessage(service, 'me', message)
+    send = SendMessage(service, 'me', message, to_address)
 
 
 def main(intialize):
@@ -58,18 +60,28 @@ def main(intialize):
 data to understand how to better their products for customers:""")
     personal_message = raw_input("Leave a personal message:")
     data = con.message(company, title, description, personal_message)
+    data["initialize"] = initialize
+    data["title"] = ' '.join([x.capitalize() for x in title.split()]) # ex: Python Engineer from python engineer
+    data["personal_message"] = personal_message
+    data["listing"] = " " # empty description by default - job listing will go here
+    data["company"] = company
     print "data: ", data
     message_text =  build_message_text(data)
     print message_text
-    if "y" in initialize[0].lower():
+    if "y" in initialize[0] and "y" not in initialize[2]:
         to_address = raw_input("What is the email address of the company?:")
-        send_email(data, to_address, company, title, description, personal_message,
-            message_text)
-    if "y" in initialize[1].lower():
-        update_trello(data, company, message_text)
+        send_email(data, to_address, title, message_text)
+    if "y" in initialize[1] and "y" not in initialize[2]:
+        update_trello(data, message_text)
     save_cover_letter(company, message_text)
+    if "y" in initialize[2]:
+        scrape_craigslist.scrape_and_apply(data, message_data)
+    print "All done"
 
 
 if __name__ == "__main__":
-    initialize = raw_input("Are you sending an email?:"), raw_input("Are you updating your Trello?:")
+    sending_email = raw_input("Are you only sending an email?:").lower()
+    updating_trello = raw_input("Are you only updating your Trello?:").lower()
+    web_scraping = raw_input("Will you be web scraping?:").lower()
+    initialize = sending_email, updating_trello, web_scraping
     main(initialize)
