@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from bs4 import BeautifulSoup # For HTML parsing
+from lib.helpers import *
 import urllib2 # Website connections
 import re # Regular expressions
 from time import sleep # To prevent overwhelming the server between connections
@@ -9,7 +10,7 @@ from collections import Counter # Keep track of our term counts
 from nltk.corpus import stopwords # Filter out stopwords, such as 'the', 'or', 'and'
 import pandas as pd # For converting results to a dataframe and bar chart plots
 import random
-import bot
+
 
 def text_cleaner(website):
     '''
@@ -46,12 +47,12 @@ def text_cleaner(website):
     return text
 
 
-def scrape_and_apply(data_dict):
+def scrape_and_apply(data):
     '''
     TODO: UPDATE DESCRIPTION
     '''
 
-    final_job = raw_input("What job title are you looking for?:")
+    final_job = data["title"]
     final_job = final_job.replace(" ", "+") # searching for data scientist exact fit("data scientist" on Craigslist search)
     final_site_list = ["https://sfbay.craigslist.org/search/jjj", "?query=", final_job]
     final_site = ''.join(final_site_list) # Merge the html address together into one string
@@ -86,6 +87,7 @@ def scrape_and_apply(data_dict):
             print "TIMEOUT FOR PAGE {}".format(i)
         page_obj = BeautifulSoup(html_page) # Locate all of the job links
         job_URLS = [base_url + link.get('href') for link in page_obj.findAll(class_='hdrlnk')]
+        random.shuffle(job_URLS) # Make it appear like we are checking the jobs out of order
         descriptions = [desc for desc in soup.findAll(class_= "hdrlnk")]
         #print job_URLS
         print "Job URLs:", "{} on Page {}".format(len(job_URLS), i)
@@ -117,12 +119,18 @@ def scrape_and_apply(data_dict):
                 email_address = email_soup.find(class_="anonemail")
                 if email_address is not None:
                     email_address = email_address.get_text()
+                    print email_address
                     # I will expand on the below variable's purpose later
-                    message_text = bot.build_message_text(data) # Generate a unique cover letter from information on the page
+                    message_text = build_message_text(data) # Generate a unique cover letter from information on the page
                     if "y" in data["initialize"][0]:
-                        bot.send_email(data, email_address, description, message_text)
+                        print "YES"
+                        print send_email(data, email_address, description, message_text)
                     if "y" in data["initialize"][1] and "y" in data["initialize"][2]:
-                        bot.update_trello(data, message_text)
+                        print "AND YES"
+                        print bot.update_trello(data, message_text)
+                    print "email_address:", email_address
+                else:
+                    print "No email address found"
             print "Page: {} | Listing {} complete".format(i, j + 1)
             job_listings.append(listing) #print final_description
             sleep(random.uniform(5.00, 10.00)) # So that we don't be jerks. If you have a very fast internet connection you could hit the server a lot!
@@ -168,3 +176,7 @@ def scrape_and_apply(data_dict):
     # Sort the data for plotting purposes
     final_frame.sort_values(by= 'NumPostings', ascending = False, inplace = True)
     return final_frame # End of the function
+
+if __name__ == "__main__":
+    data = {}
+    scrape_and_apply(data)

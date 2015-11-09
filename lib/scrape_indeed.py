@@ -167,6 +167,6 @@ def skills_info(city = None, state = None):
     return final_frame # End of the function
 
 #seattle_info = skills_info(city = 'Seattle', state = 'WA')
-silicon_val_info = skills_info(city = 'San Francisco', state = 'CA')
+#silicon_val_info = skills_info(city = 'San Francisco', state = 'CA')
 #chicago_info = skills_info(city = 'Chicago', state = 'IL')
-print silicon_val_info
+#print silicon_val_info
